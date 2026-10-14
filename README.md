@@ -16,6 +16,7 @@
 [Como Executar](#-como-executar-em-1-minuto) •
 [Credenciais de Acesso](#-credenciais-de-acesso-homologação) •
 [Perfis & Telas Dedicadas](#-perfis--telas-dedicadas) •
+[Plano de Implantação (8 Semanas)](docs/PLANO_DE_IMPLANTACAO.md) •
 [Módulos & Regras](#-regras-de-negócio-do-estágio) •
 [Arquitetura do Projeto](#-estrutura-de-diretórios-modular)
 

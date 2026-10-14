@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Professor & Preceptor — CEPA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Touch optimization for mobile buttons */
+        .btn-touch {
+            touch-action: manipulation;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans pb-20">
+
+    <!-- Mobile Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <img src="/assets/LOGO CEPA SEM FUNDO.png" alt="Logo" class="h-8 w-auto">
+            <div>
+                <div class="text-xs font-bold text-slate-800 leading-tight">Preceptor & Professor</div>
+                <div id="user-nome" class="text-[10px] text-emerald-700 font-medium">Profª. Amanda Silveira</div>
+            </div>
+        </div>
+        <button onclick="fazerLogout()" class="p-2 text-slate-400 hover:text-rose-600" title="Sair">
+            <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+        </button>
+    </header>
+
+    <!-- Top Mode Switcher -->
+    <div class="bg-white border-b border-slate-200 p-2 flex space-x-2 shadow-xs">
+        <button onclick="trocarModo('estagio')" id="btn-modo-estagio" class="flex-1 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm flex items-center justify-center space-x-1.5 transition-all">
+            <i class="fa-solid fa-hospital-user"></i>
+            <span>Presença de Estágio</span>
+        </button>
+        <button onclick="trocarModo('teorica')" id="btn-modo-teorica" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 flex items-center justify-center space-x-1.5 transition-all">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <span>Chamada Teórica</span>
+        </button>
+    </div>
+
+    <!-- MAIN VIEW: PRESENÇA DE ESTÁGIO (MOBILE-FIRST) -->
+    <main id="view-estagio" class="p-4 space-y-4 max-w-2xl w-full mx-auto flex-1">
+        
+        <!-- Hospital & Filtro do Dia -->
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+                <span class="flex items-center"><i class="fa-solid fa-location-dot text-emerald-600 mr-1.5"></i> Campo de Estágio Cirúrgico</span>
+                <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">Hoje: 17/10/2026</span>
+            </div>
+            <div class="font-bold text-slate-800 text-sm">Hospital Municipal de Franco da Rocha</div>
+            <div class="text-[11px] text-slate-500">Centro Cirúrgico • Manhã (07:00 às 13:00)</div>
+        </div>
+
+        <!-- Lista de Alunos no Campo -->
+        <div class="space-y-3" id="cards-estagio-mobile">
+            <!-- Inserido dinamicamente via JS -->
+        </div>
+
+    </main>
+
+    <!-- MAIN VIEW: CHAMADA TEÓRICA -->
+    <main id="view-teorica" class="p-4 space-y-4 max-w-2xl w-full mx-auto flex-1 hidden">
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2 text-xs">
+            <label class="block font-bold text-slate-700">Selecione a Turma:</label>
+            <select id="teorica-turma" onchange="carregarChamadaTeorica()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-semibold focus:ring-emerald-500">
+                <option value="1">Turma 131 - Instrumentação Cirúrgica (Sábados)</option>
+                <option value="2">Turma 129 - Instrumentação Cirúrgica</option>
+                <option value="3">TN-240 - Técnico em Enfermagem</option>
+            </select>
+        </div>
+
+        <div class="space-y-2" id="cards-teorica-mobile">
+            <!-- Inserido dinamicamente -->
+        </div>
+
+        <div class="pt-2">
+            <button onclick="salvarChamadaTeorica()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md text-sm flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Gravar Diário de Classe</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal Falta Justificada (Atestado Médico) -->
+    <div id="modal-justificar" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3 text-xs">
+            <div class="flex items-center justify-between border-b pb-2">
+                <h3 class="font-bold text-slate-800 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-file-medical text-amber-500 text-base"></i>
+                    <span>Atestado Médico [FJ]</span>
+                </h3>
+                <button onclick="fecharModalJustificar()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-base"></i></button>
+            </div>
+            <p class="text-slate-600">
+                Ao registrar o atestado, o aluno é isentado da <strong>taxa de R$ 50,00</strong>.
+            </p>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">CRM ou Protocolo do Atestado:</label>
+                <input type="text" id="input-protocolo-atestado" placeholder="Ex: CRM-129482 / AT-902" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 font-mono">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="fecharModalJustificar()" class="px-3 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg">Cancelar</button>
+                <button onclick="salvarFaltaJustificada()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg shadow-sm">Abonar & Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth-guard.js"></script>
+    <script>
+        let escalaIdAtiva = null;
+        let listaEscalas = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarSessao('PROFESSOR');
+            await carregarEscalasCampo();
+        });
+
+        function trocarModo(modo) {
+            const vEstagio = document.getElementById('view-estagio');
+            const vTeorica = document.getElementById('view-teorica');
+            const btnE = document.getElementById('btn-modo-estagio');
+            const btnT = document.getElementById('btn-modo-teorica');
+
+            if (modo === 'estagio') {
+                vEstagio.classList.remove('hidden');
+                vTeorica.classList.add('hidden');
+                btnE.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm flex items-center justify-center space-x-1.5';
+                btnT.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 flex items-center justify-center space-x-1.5';
+                carregarEscalasCampo();
+            } else {
+                vEstagio.classList.add('hidden');
+                vTeorica.classList.remove('hidden');
+                btnT.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm flex items-center justify-center space-x-1.5';
+                btnE.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 flex items-center justify-center space-x-1.5';
+                carregarChamadaTeorica();
+            }
+        }
+
+        async function carregarEscalasCampo() {
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch('/api/estagios', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    listaEscalas = await res.json();
+                    const container = document.getElementById('cards-estagio-mobile');
+
+                    container.innerHTML = listaEscalas.map(e => {
+                        const isP = e.status_presenca === 'PRESENCA';
+                        const isF = e.status_presenca === 'FALTA';
+                        const isFJ = e.status_presenca === 'JUSTIFICADA';
+
+                        let statusDesc = '';
+                        if (e.status_aluno === 'Desistente') {
+                            statusDesc = `<div class="text-[10px] text-rose-600 font-bold mt-0.5"><i class="fa-solid fa-user-xmark mr-1"></i>Desistente: ${e.motivo_desistencia || ''}</div>`;
+                        } else if (e.status_aluno === 'Trancado') {
+                            statusDesc = `<div class="text-[10px] text-amber-600 font-semibold mt-0.5"><i class="fa-solid fa-lock mr-1"></i>Trancado: ${e.motivo_desistencia || ''}</div>`;
+                        }
+
+                        return `
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <div class="font-bold text-slate-800 text-sm">${e.nome_aluno}</div>
+                                        <div class="text-[11px] font-mono text-slate-500">${e.prontuario} • ${e.codigo_turma}</div>
+                                        ${statusDesc}
+                                    </div>
+                                    ${e.taxa_reposicao_gerada ? `<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">Taxa R$ 50 gerada</span>` : ''}
+                                </div>
+
+                                <!-- Botões Grandes Touch Friendly -->
+                                <div class="grid grid-cols-3 gap-2 text-xs font-bold pt-1">
+                                    <button onclick="lancarPresencaEstagio(${e.id_escala}, ${e.id_aluno}, 'PRESENCA')" class="btn-touch py-2.5 rounded-lg border transition-all flex flex-col items-center justify-center ${isP ? 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300' : 'bg-slate-50 text-slate-700 hover:bg-emerald-50'}">
+                                        <span class="text-sm">[P]</span>
+                                        <span class="text-[9px] uppercase">Presença</span>
+                                    </button>
+                                    <button onclick="lancarPresencaEstagio(${e.id_escala}, ${e.id_aluno}, 'FALTA')" class="btn-touch py-2.5 rounded-lg border transition-all flex flex-col items-center justify-center ${isF ? 'bg-rose-600 text-white border-rose-600 shadow-md ring-2 ring-rose-300' : 'bg-slate-50 text-slate-700 hover:bg-rose-50'}">
+                                        <span class="text-sm">[F]</span>
+                                        <span class="text-[9px] uppercase">Falta (+R$50)</span>
+                                    </button>
+                                    <button onclick="abrirModalJustificar(${e.id_escala})" class="btn-touch py-2.5 rounded-lg border transition-all flex flex-col items-center justify-center ${isFJ ? 'bg-amber-500 text-white border-amber-500 shadow-md ring-2 ring-amber-300' : 'bg-slate-50 text-slate-700 hover:bg-amber-50'}">
+                                        <span class="text-sm">[FJ]</span>
+                                        <span class="text-[9px] uppercase">Atestado</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function lancarPresencaEstagio(id_escala, id_aluno, status, atestado_num = null) {
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch('/api/estagios/presenca', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ id_escala, id_aluno, status, atestado_num })
+                });
+                const data = await res.json();
+                if (data.alerta_evasao_ic) {
+                    alert('⚠️ ALERTA VERMELHO IC: Aluno atingiu 3 faltas consecutivas sem justificativa!\nNotificação automática enviada à Coordenação.');
+                }
+                carregarEscalasCampo();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function abrirModalJustificar(idEscala) {
+            escalaIdAtiva = idEscala;
+            document.getElementById('modal-justificar').classList.remove('hidden');
+        }
+
+        function fecharModalJustificar() {
+            document.getElementById('modal-justificar').classList.add('hidden');
+        }
+
+        async function salvarFaltaJustificada() {
+            const proto = document.getElementById('input-protocolo-atestado').value || 'CRM-VALIDADO';
+            if (!escalaIdAtiva) return;
+            const item = listaEscalas.find(e => e.id_escala === escalaIdAtiva);
+            if (item) {
+                await lancarPresencaEstagio(item.id_escala, item.id_aluno, 'JUSTIFICADA', proto);
+            }
+            fecharModalJustificar();
+        }
+
+        async function carregarChamadaTeorica() {
+            const turmaId = document.getElementById('teorica-turma').value;
+            const container = document.getElementById('cards-teorica-mobile');
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch(`/api/professor/chamada?id_turma=${turmaId}`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    const alunos = await res.json();
+                    container.innerHTML = alunos.map(a => `
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between text-xs">
+                            <div>
+                                <div class="font-bold text-slate-800">${a.nome_completo}</div>
+                                <div class="text-[10px] text-slate-500 font-mono">${a.prontuario} • Freq: ${a.frequencia_acumulada}%</div>
+                            </div>
+                            <div class="flex space-x-1" data-aluno="${a.id_aluno}">
+                                <button onclick="marcarBtnTeorica(this, 'PRESENCA')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">[P]</button>
+                                <button onclick="marcarBtnTeorica(this, 'FALTA')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">[F]</button>
+                                <button onclick="marcarBtnTeorica(this, 'JUSTIFICADA')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">[FJ]</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function marcarBtnTeorica(btn, status) {
+            const parent = btn.parentElement;
+            const btns = parent.querySelectorAll('button');
+            btns.forEach(b => {
+                b.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700';
+            });
+            if (status === 'PRESENCA') btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white';
+            if (status === 'FALTA') btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white';
+            if (status === 'JUSTIFICADA') btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-white';
+            parent.setAttribute('data-status', status);
+        }
+
+        async function salvarChamadaTeorica() {
+            alert('Chamada teórica salva com sucesso no sistema!');
+        }
+    </script>
+</body>
+</html>

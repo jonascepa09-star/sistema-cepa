@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso ao Sistema CEPA / CFIC - Gestão Integrada</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cepa: {
+                            500: '#16a34a',
+                            600: '#15803d',
+                            700: '#166534',
+                            900: '#052e16',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-100 via-emerald-50/40 to-slate-200 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+        <!-- Header com Logos Oficiais -->
+        <div class="bg-white p-6 pb-4 border-b border-slate-100 text-center">
+            <div class="flex items-center justify-center space-x-3 mb-3">
+                <img src="/assets/LOGO CEPA SEM FUNDO.png" alt="Logo CEPA" class="h-12 w-auto object-contain">
+                <div class="h-8 w-px bg-slate-300"></div>
+                <img src="/assets/LOGO CFIC SEM FUNDO.png" alt="Logo CFIC" class="h-12 w-auto object-contain">
+            </div>
+            <h1 class="text-xl font-black text-slate-800 tracking-tight">SISTEMA INTEGRADO CEPA</h1>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Controle Acadêmico, Frequência & Estágios Hospitalares</p>
+        </div>
+
+        <!-- Formulário de Login -->
+        <form id="form-login" onsubmit="realizarLogin(event)" class="p-6 space-y-4">
+            
+            <!-- Toast de Erro -->
+            <div id="toast-erro" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center space-x-2">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
+                <span id="toast-mensagem">Credenciais inválidas.</span>
+            </div>
+
+            <!-- Campo E-mail / Prontuário -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    E-mail ou Prontuário:
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <i class="fa-solid fa-user text-sm"></i>
+                    </span>
+                    <input type="text" id="input-login" required placeholder="ex: secretaria@cepa.edu.br ou 2026-00129" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                </div>
+            </div>
+
+            <!-- Campo Senha -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Senha de Acesso:
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <i class="fa-solid fa-lock text-sm"></i>
+                    </span>
+                    <input type="password" id="input-senha" required placeholder="Digite sua senha" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-10 py-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                    <button type="button" onclick="alternarVisibilidadeSenha()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                        <i id="icone-olho" class="fa-regular fa-eye text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botão de Login com Spinner -->
+            <button type="submit" id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs sm:text-sm font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                <span id="btn-text">Acessar Plataforma</span>
+                <i id="btn-spinner" class="fa-solid fa-circle-notch fa-spin hidden text-sm"></i>
+            </button>
+
+            <!-- Acesso Rápido para Demonstração / Testes -->
+            <div class="pt-4 border-t border-slate-100">
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
+                    Acesso Rápido (Ambiente de Homologação):
+                </p>
+                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <button type="button" onclick="preencher('secretaria@cepa.edu.br', 'cepa123')" class="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-left transition-all">
+                        <div class="font-bold text-slate-700">👤 Secretaria</div>
+                        <div class="text-[10px] text-slate-400 font-mono">secretaria@cepa.edu.br</div>
+                    </button>
+                    <button type="button" onclick="preencher('coordenacao@cepa.edu.br', 'cepa123')" class="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-left transition-all">
+                        <div class="font-bold text-slate-700">🎓 Coordenação</div>
+                        <div class="text-[10px] text-slate-400 font-mono">coordenacao@cepa.edu.br</div>
+                    </button>
+                    <button type="button" onclick="preencher('professor@cepa.edu.br', 'cepa123')" class="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-left transition-all">
+                        <div class="font-bold text-slate-700">🩺 Preceptor / Prof</div>
+                        <div class="text-[10px] text-slate-400 font-mono">professor@cepa.edu.br</div>
+                    </button>
+                    <button type="button" onclick="preencher('aluno@cepa.edu.br', 'cepa123')" class="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-left transition-all">
+                        <div class="font-bold text-slate-700">🎒 Aluno</div>
+                        <div class="text-[10px] text-slate-400 font-mono">aluno@cepa.edu.br</div>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="bg-slate-50 p-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
+            CEPA & CFIC — Autenticação Segura JWT (RBAC)
+        </div>
+    </div>
+
+    <script src="/js/login.js"></script>
+</body>
+</html>

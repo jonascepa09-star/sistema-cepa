@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno — CEPA / CFIC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <img src="/assets/LOGO CEPA SEM FUNDO.png" alt="Logo" class="h-9 w-auto">
+            <div>
+                <span class="text-sm font-bold text-slate-800">Portal do Aluno</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full ml-1">CEPA</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3 text-xs">
+            <div class="text-right">
+                <div id="aluno-nome-header" class="font-bold text-slate-700">Carregando...</div>
+                <div id="aluno-prontuario-header" class="text-slate-400 font-mono">2026-00129</div>
+            </div>
+            <button onclick="fazerLogout()" class="p-2 text-slate-400 hover:text-rose-600" title="Sair"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6 flex-1">
+        
+        <!-- Boas-vindas -->
+        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-semibold text-emerald-200 uppercase tracking-wider">Painel Acadêmico Individual</span>
+                <h1 id="aluno-nome-banner" class="text-xl font-black mt-1">Ana Cristina de Souza</h1>
+                <div id="aluno-curso-banner" class="text-xs text-emerald-100 mt-1">Turma 131 • Instrumentação Cirúrgica (Sábados)</div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20 text-center">
+                <div class="text-[10px] uppercase font-bold text-emerald-200">Status da Matrícula</div>
+                <div id="aluno-status-badge" class="text-sm font-bold text-emerald-300">Ativo Regular</div>
+            </div>
+        </div>
+
+        <!-- Indicadores Acadêmicos (Frequência & Média) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div class="text-xs font-bold text-slate-400 uppercase">Frequência Global</div>
+                <div id="aluno-freq" class="text-3xl font-black text-emerald-600 mt-1">92.0%</div>
+                <div class="text-[11px] text-emerald-700 font-semibold mt-1">Mínimo exigido: 75% (Regular)</div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div class="text-xs font-bold text-slate-400 uppercase">Média do Módulo</div>
+                <div id="aluno-media" class="text-3xl font-black text-sky-600 mt-1">8.5</div>
+                <div class="text-[11px] text-sky-700 font-semibold mt-1">Mínimo exigido: 6.0 (Aprovado)</div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div class="text-xs font-bold text-slate-400 uppercase">Fichas de Estágio</div>
+                <div id="aluno-fichas" class="text-xl font-black text-emerald-700 mt-2">100% Homologadas</div>
+                <div class="text-[11px] text-slate-500 mt-1">Aprovado pela Coordenação</div>
+            </div>
+        </div>
+
+        <!-- Escalas de Estágio do Aluno -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-700 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-hospital-user text-emerald-600"></i>
+                    <span>Minhas Escalas & Frequência no Campo Cirúrgico</span>
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                    <thead class="bg-slate-100 text-slate-600 font-semibold uppercase">
+                        <tr>
+                            <th class="py-3 px-4">Hospital / Campo</th>
+                            <th class="py-3 px-4">Preceptor</th>
+                            <th class="py-3 px-4">Data / Turno</th>
+                            <th class="py-3 px-4 text-center">Frequência</th>
+                            <th class="py-3 px-4 text-center">Ficha Homologada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aluno-tabela-escalas" class="divide-y divide-slate-100">
+                        <!-- Carregado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ficha Financeira do Aluno -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <h3 class="text-sm font-bold text-slate-700 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-receipt text-sky-600"></i>
+                    <span>Minhas Mensalidades & Quitações</span>
+                </h3>
+                <div class="text-xs text-slate-500">Chave Pix CEPA: <strong class="font-mono text-slate-700">secretaria@cepa.edu.br</strong></div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                    <thead class="bg-slate-100 text-slate-600 font-semibold uppercase">
+                        <tr>
+                            <th class="py-3 px-4">Descrição</th>
+                            <th class="py-3 px-4">Vencimento</th>
+                            <th class="py-3 px-4">Valor</th>
+                            <th class="py-3 px-4 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aluno-tabela-financeiro" class="divide-y divide-slate-100">
+                        <!-- Carregado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400">
+        CEPA — Centro de Ensino Profissionalizante Anchieta • Portal do Aluno
+    </footer>
+
+    <script src="/js/auth-guard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarSessao('ALUNO');
+            await carregarPainel();
+        });
+
+        async function carregarPainel() {
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch('/api/aluno/meu-painel', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const a = data.aluno;
+
+                    document.getElementById('aluno-nome-header').innerText = a.nome_completo;
+                    document.getElementById('aluno-prontuario-header').innerText = a.prontuario;
+                    document.getElementById('aluno-nome-banner').innerText = a.nome_completo;
+                    document.getElementById('aluno-curso-banner').innerText = `${a.codigo_turma} • ${a.curso_nome} (${a.dias_semana || 'Sábados'})`;
+                    document.getElementById('aluno-status-badge').innerText = a.status_matricula || 'Ativo Regular';
+
+                    document.getElementById('aluno-freq').innerText = `${a.frequencia_acumulada}%`;
+                    document.getElementById('aluno-media').innerText = Number(a.media_modulo).toFixed(1);
+                    document.getElementById('aluno-fichas').innerText = a.fichas_validadas ? '100% Homologadas' : 'Em Andamento';
+
+                    // Escalas
+                    const tbodyE = document.getElementById('aluno-tabela-escalas');
+                    tbodyE.innerHTML = data.escalas.map(e => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-4 font-medium text-slate-800">${e.hospital_campo}</td>
+                            <td class="py-3 px-4 text-slate-600">${e.preceptor_nome}</td>
+                            <td class="py-3 px-4 text-slate-600">${e.data_estagio} (${e.turno})</td>
+                            <td class="py-3 px-4 text-center font-bold">${e.status_presenca}</td>
+                            <td class="py-3 px-4 text-center">
+                                ${e.ficha_validada_bool ? '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Homologada</span>' : '<span class="text-slate-400">Pendente</span>'}
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    // Financeiro
+                    const tbodyF = document.getElementById('aluno-tabela-financeiro');
+                    tbodyF.innerHTML = data.financeiro.map(f => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-4 font-medium text-slate-800">${f.descricao}</td>
+                            <td class="py-3 px-4 text-slate-600">${f.vencimento}</td>
+                            <td class="py-3 px-4 font-mono font-bold">R$ ${f.valor_base.toFixed(2)}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${f.status === 'Pago' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                    ${f.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+</html>

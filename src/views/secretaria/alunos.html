@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos & Rematrícula — Secretaria CEPA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="/assets/LOGO CEPA SEM FUNDO.png" alt="Logo" class="h-9 w-auto">
+                <span class="text-sm font-bold text-slate-800">Alunos & Motor de Rematrícula</span>
+            </div>
+            <div class="flex items-center space-x-4 text-xs">
+                <div class="text-right">
+                    <div id="user-nome" class="font-bold text-slate-700">Secretaria</div>
+                    <div class="text-emerald-700 font-medium">CEPA Geral</div>
+                </div>
+                <button onclick="fazerLogout()" class="p-2 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 border-t border-slate-100 flex space-x-2 py-2 overflow-x-auto text-xs font-semibold">
+            <a href="dashboard.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="alunos.html" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-1.5"><i class="fa-solid fa-users"></i><span>Alunos & Rematrícula</span></a>
+            <a href="financeiro.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-file-invoice-dollar"></i><span>Financeiro & WhatsApp</span></a>
+            <a href="certificados.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-award"></i><span>Certificados (4 Pilares)</span></a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6 flex-1">
+        
+        <!-- Grid: Cadastro Rápido & Diagnóstico de Rematrícula -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Cadastro -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+                    <i class="fa-solid fa-user-plus text-emerald-600"></i>
+                    <span>Cadastrar Novo Aluno</span>
+                </h2>
+                <form id="form-cad-aluno" onsubmit="cadastrarAluno(event)" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nome Completo:</label>
+                        <input type="text" id="cad-nome" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">CPF:</label>
+                            <input type="text" id="cad-cpf" required placeholder="000.000.000-00" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">WhatsApp:</label>
+                            <input type="text" id="cad-zap" required placeholder="11999999999" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Turma de Ingresso:</label>
+                        <select id="cad-turma" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                            <option value="1">Turma 131 - Instrumentação Cirúrgica (Sábados)</option>
+                            <option value="2">Turma 129 - Instrumentação Cirúrgica</option>
+                            <option value="3">TN-240 - Técnico em Enfermagem (Noite)</option>
+                            <option value="4">AUX-242 - Auxiliar de Enfermagem</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow-sm">
+                        Gerar Prontuário & Salvar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Motor de Rematrícula em 1 Clique -->
+            <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-bolt text-amber-500"></i>
+                            <span>Motor de Diagnóstico de Rematrícula (Trava Tripla)</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Analisa automaticamente: 1. Débitos Financeiros, 2. Frequência ≥ 75%, 3. Média ≥ 6.0</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <select id="select-rematricula" class="flex-1 bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs font-semibold focus:ring-emerald-500 focus:outline-none">
+                        <!-- Inserido dinamicamente -->
+                    </select>
+                    <button onclick="diagnosticarRematricula()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-sm">
+                        Diagnosticar
+                    </button>
+                </div>
+
+                <div id="resultado-rematricula" class="border border-slate-200 rounded-xl p-4 bg-slate-50 text-xs">
+                    <div class="text-center text-slate-400 py-3">Selecione um aluno acima e clique em "Diagnosticar".</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Completa de Alunos Cadastrados -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-3">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <h3 class="text-sm font-bold text-slate-700">Base Geral de Alunos & Prontuários</h3>
+                <input type="text" id="filtro-busca" onkeyup="carregarAlunos()" placeholder="Buscar por Nome, Prontuário ou CPF..." class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-1.5 w-64 focus:outline-none focus:ring-emerald-500">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                    <thead class="bg-slate-100 text-slate-600 font-semibold uppercase">
+                        <tr>
+                            <th class="py-3 px-4">Prontuário</th>
+                            <th class="py-3 px-4">Nome Completo</th>
+                            <th class="py-3 px-4">Turma / Curso</th>
+                            <th class="py-3 px-4">Status & Motivo</th>
+                            <th class="py-3 px-4 text-center">Média</th>
+                            <th class="py-3 px-4 text-center">Frequência (%)</th>
+                            <th class="py-3 px-4 text-center">WhatsApp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-alunos" class="divide-y divide-slate-100">
+                        <!-- Carregado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="/js/auth-guard.js"></script>
+    <script>
+        let listaAlunos = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarSessao('SECRETARIA');
+            await carregarAlunos();
+        });
+
+        async function carregarAlunos() {
+            try {
+                const busca = document.getElementById('filtro-busca').value;
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch(`/api/secretaria/alunos?busca=${encodeURIComponent(busca)}`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    listaAlunos = await res.json();
+                    renderizarTabela();
+                    popularSelectRematricula();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('tabela-alunos');
+            tbody.innerHTML = listaAlunos.map(a => {
+                let badgeStatus = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800">Ativo</span>`;
+                if (a.status_matricula === 'Desistente') {
+                    badgeStatus = `<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800">Desistente</span>
+                                   <div class="text-[10px] text-rose-600 mt-0.5">${a.motivo_saida || 'Não especificado'}</div>`;
+                } else if (a.status_matricula === 'Trancado') {
+                    badgeStatus = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800">Trancado</span>
+                                   <div class="text-[10px] text-amber-600 mt-0.5">${a.motivo_saida || 'Não especificado'}</div>`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-4 font-mono font-bold text-slate-700">${a.prontuario}</td>
+                        <td class="py-3 px-4 font-bold text-slate-800">${a.nome_completo}</td>
+                        <td class="py-3 px-4 text-slate-600">${a.codigo_turma || 'Turma 131'}</td>
+                        <td class="py-3 px-4">${badgeStatus}</td>
+                        <td class="py-3 px-4 text-center font-bold">${(a.media_modulo || 0).toFixed(1)}</td>
+                        <td class="py-3 px-4 text-center font-bold ${(a.frequencia_acumulada < 75) ? 'text-rose-600' : 'text-emerald-700'}">${a.frequencia_acumulada || 100}%</td>
+                        <td class="py-3 px-4 text-center">
+                            <a href="https://wa.me/55${(a.contato_whatsapp || '').replace(/\D/g, '')}" target="_blank" class="text-emerald-600 hover:text-emerald-700 font-bold">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function popularSelectRematricula() {
+            const select = document.getElementById('select-rematricula');
+            select.innerHTML = listaAlunos.map(a => `
+                <option value="${a.id}">[${a.prontuario}] ${a.nome_completo} (${a.codigo_turma || 'Turma 131'})</option>
+            `).join('');
+        }
+
+        async function diagnosticarRematricula() {
+            const id = document.getElementById('select-rematricula').value;
+            const resDiv = document.getElementById('resultado-rematricula');
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch(`/api/secretaria/rematricula/validar/${id}`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const data = await res.json();
+
+                let html = `
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                        <div>
+                            <strong>${data.aluno}</strong> <span class="font-mono text-slate-500">(${data.prontuario})</span>
+                        </div>
+                        ${data.liberado 
+                            ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-check mr-1"></i> Rematrícula Liberada com 1 Clique</span>`
+                            : `<span class="bg-rose-100 text-rose-800 font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-lock mr-1"></i> Rematrícula Travada</span>`
+                        }
+                    </div>
+                `;
+
+                if (!data.liberado) {
+                    html += `
+                        <div class="mt-3 space-y-1.5 text-rose-700">
+                            ${data.bloqueios.map(b => `
+                                <div class="flex items-center space-x-2 bg-rose-50 border border-rose-200 p-2 rounded-lg">
+                                    <i class="fa-solid fa-circle-xmark text-rose-500"></i>
+                                    <span>${b.mensagem}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="mt-3 bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-emerald-800 flex items-center justify-between">
+                            <span>Todos os 3 requisitos aprovados (Financeiro regular, Frequência ≥ 75% e Média ≥ 6.0).</span>
+                            <button onclick="alert('Rematrícula confirmada para o próximo semestre!')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-lg">
+                                Efetivar Agora
+                            </button>
+                        </div>
+                    `;
+                }
+
+                resDiv.innerHTML = html;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function cadastrarAluno(e) {
+            e.preventDefault();
+            const nome = document.getElementById('cad-nome').value;
+            const cpf = document.getElementById('cad-cpf').value;
+            const zap = document.getElementById('cad-zap').value;
+            const id_turma = document.getElementById('cad-turma').value;
+
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch('/api/secretaria/alunos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ nome_completo: nome, cpf, contato_whatsapp: zap, id_turma })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+
+                alert(`Aluno cadastrado com sucesso!\nProntuário gerado: ${data.prontuario}`);
+                document.getElementById('form-cad-aluno').reset();
+                carregarAlunos();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

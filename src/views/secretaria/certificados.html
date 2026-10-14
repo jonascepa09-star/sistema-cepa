@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificados & Os 4 Pilares — Secretaria CEPA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="/assets/LOGO CEPA SEM FUNDO.png" alt="Logo" class="h-9 w-auto">
+                <span class="text-sm font-bold text-slate-800">Fila de Emissão de Certificados & Validação dos 4 Pilares</span>
+            </div>
+            <div class="flex items-center space-x-4 text-xs">
+                <div class="text-right">
+                    <div id="user-nome" class="font-bold text-slate-700">Secretaria</div>
+                    <div class="text-emerald-700 font-medium">CEPA Certificados</div>
+                </div>
+                <button onclick="fazerLogout()" class="p-2 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 border-t border-slate-100 flex space-x-2 py-2 overflow-x-auto text-xs font-semibold">
+            <a href="dashboard.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="alunos.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-users"></i><span>Alunos & Rematrícula</span></a>
+            <a href="financeiro.html" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-1.5"><i class="fa-solid fa-file-invoice-dollar"></i><span>Financeiro & WhatsApp</span></a>
+            <a href="certificados.html" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-1.5"><i class="fa-solid fa-award"></i><span>Certificados (4 Pilares)</span></a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6 flex-1">
+        
+        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-800 flex items-start space-x-3">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>
+            <div>
+                <strong class="font-bold">Regulamento dos 4 Pilares de Certificação:</strong>
+                <p class="mt-0.5 text-emerald-700">Para liberar a impressão oficial, o aluno deve ter: 1. Média ≥ 6.0 | 2. Frequência global ≥ 75% | 3. Fichas de estágio 100% homologadas | 4. Quitação financeira completa.</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-700">Alunos Aptos e Fila de Validação</h3>
+                <span class="text-xs text-slate-500">Validação Automática em Tempo Real</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                    <thead class="bg-slate-100 text-slate-600 font-semibold uppercase">
+                        <tr>
+                            <th class="py-3 px-4">Prontuário</th>
+                            <th class="py-3 px-4">Nome do Aluno</th>
+                            <th class="py-3 px-4">Turma / Curso</th>
+                            <th class="py-3 px-4 text-center">1. Média (≥ 6.0)</th>
+                            <th class="py-3 px-4 text-center">2. Frequência (≥ 75%)</th>
+                            <th class="py-3 px-4 text-center">3. Estágio Homologado</th>
+                            <th class="py-3 px-4 text-center">4. Quitação Financeira</th>
+                            <th class="py-3 px-4 text-center">Status Emissão</th>
+                            <th class="py-3 px-4 text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-certificados" class="divide-y divide-slate-100">
+                        <!-- Carregado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Certificado Oficial -->
+    <div id="modal-cert" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 shadow-2xl space-y-6">
+            <div class="flex items-center justify-between border-b pb-4">
+                <div class="flex items-center space-x-3">
+                    <img src="/assets/LOGO CEPA SEM FUNDO.png" class="h-10 w-auto" alt="Logo">
+                    <img src="/assets/LOGO CFIC SEM FUNDO.png" class="h-10 w-auto" alt="Logo">
+                    <div>
+                        <div class="text-sm font-black text-slate-800">DOCUMENTO OFICIAL CEPA / CFIC</div>
+                        <div class="text-xs text-slate-500">Certificado de Capacitação Homologado</div>
+                    </div>
+                </div>
+                <button onclick="fecharModalCert()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-lg"></i></button>
+            </div>
+
+            <div id="conteudo-certificado" class="border-2 border-double border-emerald-800 p-8 rounded-lg bg-amber-50/20 text-center space-y-4">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-2 border-t">
+                <button onclick="fecharModalCert()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold">Fechar</button>
+                <button onclick="window.print()" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-md flex items-center space-x-2">
+                    <i class="fa-solid fa-print"></i><span>Imprimir Certificado</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth-guard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarSessao('SECRETARIA');
+            await carregarCertificados();
+        });
+
+        async function carregarCertificados() {
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const resAlunos = await fetch('/api/secretaria/alunos', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (resAlunos.ok) {
+                    const alunos = await resAlunos.json();
+                    const tbody = document.getElementById('tabela-certificados');
+
+                    const rows = await Promise.all(alunos.map(async (a) => {
+                        const resVal = await fetch(`/api/secretaria/certificados/validar/${a.id}`, {
+                            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                        });
+                        const val = await resVal.json();
+
+                        const c1 = val.criterios.media_aprovada.status;
+                        const c2 = val.criterios.frequencia_minima.status;
+                        const c3 = val.criterios.fichas_estagio_validadas.status;
+                        const c4 = val.criterios.quitacao_financeira.status;
+
+                        const badgeC1 = c1 ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> ${val.criterios.media_aprovada.valor}</span>` : `<span class="text-rose-600 font-bold"><i class="fa-solid fa-times"></i> ${val.criterios.media_aprovada.valor}</span>`;
+                        const badgeC2 = c2 ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> ${val.criterios.frequencia_minima.valor}</span>` : `<span class="text-rose-600 font-bold"><i class="fa-solid fa-times"></i> ${val.criterios.frequencia_minima.valor}</span>`;
+                        const badgeC3 = c3 ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Homologado</span>` : `<span class="text-rose-600 font-bold"><i class="fa-solid fa-clock"></i> Pendente</span>`;
+                        const badgeC4 = c4 ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Quitado</span>` : `<span class="text-rose-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Débito</span>`;
+
+                        const statusBadge = val.elegivel
+                            ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Apto</span>`
+                            : `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">Trava Ativa</span>`;
+
+                        const acaoBtn = val.elegivel
+                            ? `<button onclick="abrirCertificado(${a.id})" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs flex items-center space-x-1 mx-auto"><i class="fa-solid fa-print"></i><span>Emitir</span></button>`
+                            : `<button disabled class="px-3 py-1 bg-slate-200 text-slate-400 font-semibold rounded text-xs cursor-not-allowed mx-auto">Bloqueado</button>`;
+
+                        return `
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-mono font-bold text-slate-700">${a.prontuario}</td>
+                                <td class="py-3 px-4 font-bold text-slate-800">${a.nome_completo}</td>
+                                <td class="py-3 px-4 text-slate-600">${a.codigo_turma || 'Turma 131'}</td>
+                                <td class="py-3 px-4 text-center">${badgeC1}</td>
+                                <td class="py-3 px-4 text-center">${badgeC2}</td>
+                                <td class="py-3 px-4 text-center">${badgeC3}</td>
+                                <td class="py-3 px-4 text-center">${badgeC4}</td>
+                                <td class="py-3 px-4 text-center">${statusBadge}</td>
+                                <td class="py-3 px-4 text-center">${acaoBtn}</td>
+                            </tr>
+                        `;
+                    }));
+
+                    tbody.innerHTML = rows.join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function abrirCertificado(idAluno) {
+            try {
+                const token = localStorage.getItem('cepa_token');
+                const res = await fetch(`/api/secretaria/certificados/validar/${idAluno}`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const data = await res.json();
+
+                const isIC = (data.sigla === 'IC' || (data.curso && data.curso.includes('Cirúrgica')));
+
+                const html = `
+                    <h1 class="text-xl font-serif font-black tracking-wide text-emerald-900 uppercase">
+                        ${isIC ? 'CERTIFICADO DE CAPACITAÇÃO EM INSTRUMENTAÇÃO CIRÚRGICA' : 'CERTIFICADO DE CONCLUSÃO DE CURSO TÉCNICO'}
+                    </h1>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-mono">
+                        ${isIC ? 'PADRÃO CFIC - COMISSÃO DE FORMAÇÃO EM INSTRUMENTAÇÃO CIRÚRGICA' : 'HOMOLOGAÇÃO SECRETARIA DE EDUCAÇÃO - GDAE'}
+                    </p>
+                    <p class="text-xs pt-4 leading-relaxed max-w-lg mx-auto">
+                        Certificamos que <strong>${data.aluno}</strong>, portador(a) do Prontuário Escolar nº <strong>${data.prontuario}</strong> e CPF <strong>${data.cpf || '234.567.890-11'}</strong>, concluiu com aproveitamento e total frequência exigida a carga horária e os campos de estágio no curso de <strong>${data.curso}</strong>.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 pt-4 max-w-md mx-auto text-xs text-left bg-white p-3 rounded border">
+                        <div><strong>Média Final:</strong> ${data.criterios.media_aprovada.valor} / 10.0</div>
+                        <div><strong>Frequência Global:</strong> ${data.criterios.frequencia_minima.valor}</div>
+                        <div><strong>Fichas de Estágio:</strong> 100% Homologadas</div>
+                        <div><strong>Financeiro:</strong> Quitado</div>
+                    </div>
+                `;
+
+                document.getElementById('conteudo-certificado').innerHTML = html;
+                document.getElementById('modal-cert').classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function fecharModalCert() {
+            document.getElementById('modal-cert').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

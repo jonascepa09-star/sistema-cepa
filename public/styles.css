@@ -1,0 +1,66 @@
+/* Estilos Adicionais do Sistema de Gestão CEPA */
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animação suave para modals */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.15s ease-out forwards;
+}
+
+/* Estilos de Botão de Aba */
+.tab-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.tab-btn.active {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+    font-weight: 600;
+}
+
+/* Scrollbar fina para listas */
+.scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+}
+
+/* Modo de Impressão */
+@media print {
+    header, nav, #banner-alerta-ic, .tab-btn, footer, button, .no-print {
+        display: none !important;
+    }
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    #modal-certificado-view {
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+    #modal-certificado-view > div {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+    }
+}

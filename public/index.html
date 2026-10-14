@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Escolar & Hospitalar - CEPA / CFIC</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cepa: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#16a34a',
+                            600: '#15803d',
+                            700: '#166534',
+                            800: '#14532d',
+                            900: '#052e16',
+                        },
+                        cfic: {
+                            500: '#0284c7',
+                            700: '#0369a1'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Top Institutional Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Branding / Logos -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3 bg-white p-1 rounded-lg">
+                        <img src="assets/LOGO CEPA SEM FUNDO.png" alt="CEPA Logo" class="h-12 w-auto object-contain drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('alt-logo-cepa').style.display='block';">
+                        <div id="alt-logo-cepa" style="display:none;" class="text-xl font-black text-emerald-700 tracking-wider">CEPA</div>
+                        
+                        <div class="h-8 w-px bg-slate-300"></div>
+                        
+                        <img src="assets/LOGO CFIC SEM FUNDO.png" alt="CFIC Logo" class="h-12 w-auto object-contain drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('alt-logo-cfic').style.display='block';">
+                        <div id="alt-logo-cfic" style="display:none;" class="text-lg font-bold text-sky-700">CFIC</div>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="text-lg font-bold text-slate-800 leading-tight">Centro de Ensino Profissionalizante Anchieta</div>
+                        <div class="text-xs font-semibold text-emerald-700 flex items-center space-x-2">
+                            <span>SISTEMA INTEGRADO DE GESTÃO ACADÊMICA & ESTÁGIOS</span>
+                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-slate-500 font-normal">v2.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perfil Switcher (Os 4 Níveis de Acesso) -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <span class="text-xs text-slate-600 block uppercase font-bold tracking-wider">Perfil Ativo:</span>
+                        <div id="current-user-name" class="text-sm font-semibold text-slate-700">Administrador CEPA</div>
+                    </div>
+                    <div class="relative">
+                        <select id="select-perfil" onchange="trocarPerfil(this.value)" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-medium py-2 px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                            <option value="secretaria">👤 1. Secretaria / Adm</option>
+                            <option value="coordenacao">🎓 2. Coordenação / Supervisor</option>
+                            <option value="preceptor" selected>🩺 3. Professor / Preceptor</option>
+                            <option value="aluno">🎒 4. Portal do Aluno</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Modules Bar -->
+            <nav class="flex space-x-1 sm:space-x-3 overflow-x-auto py-2 border-t border-slate-100 text-sm font-medium scrollbar-thin">
+                <button onclick="mudarAba('estagios')" id="tab-estagios" class="tab-btn active px-4 py-2 rounded-lg flex items-center space-x-2 text-emerald-800 bg-emerald-50 border border-emerald-200">
+                    <i class="fa-solid fa-hospital-user text-emerald-600"></i>
+                    <span>Escala de Estágios Digital</span>
+                    <span id="badge-alertas" class="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1 animate-pulse">1 Alerta</span>
+                </button>
+                <button onclick="mudarAba('chamada')" id="tab-chamada" class="tab-btn px-4 py-2 rounded-lg flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <i class="fa-solid fa-clipboard-check text-slate-500"></i>
+                    <span>Chamada Teórica</span>
+                </button>
+                <button onclick="mudarAba('financeiro')" id="tab-financeiro" class="tab-btn px-4 py-2 rounded-lg flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <i class="fa-solid fa-file-invoice-dollar text-slate-500"></i>
+                    <span>Financeiro & Cobrança WhatsApp</span>
+                </button>
+                <button onclick="mudarAba('certificados')" id="tab-certificados" class="tab-btn px-4 py-2 rounded-lg flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <i class="fa-solid fa-award text-slate-500"></i>
+                    <span>Certificados & Validação</span>
+                </button>
+                <button onclick="mudarAba('rematricula')" id="tab-rematricula" class="tab-btn px-4 py-2 rounded-lg flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <i class="fa-solid fa-user-graduate text-slate-500"></i>
+                    <span>Alunos & Rematrícula</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Top KPIs & Alert Bar -->
+        <div id="banner-alerta-ic" class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg shadow-sm flex items-start justify-between">
+            <div class="flex items-start space-x-3">
+                <div class="text-rose-500 text-2xl mt-0.5">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-rose-800">Alerta Contratual IC - Risco Crítico de Evasão / Multa</h3>
+                    <p class="text-xs text-rose-700 mt-0.5">
+                        O aluno <strong>Mateus Silva Santos</strong> (Prontuário: <code>2026-00132</code> / Turma 131) atingiu <strong>3 faltas consecutivas</strong> sem justificativa no estágio.
+                        <span class="font-semibold underline">Taxa de reposição de R$ 50,00 gerada automaticamente e notificação disparada à Coordenação.</span>
+                    </p>
+                </div>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-200 text-rose-800">Regra IC Ativa</span>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- MÓDULO 3: CRONOGRAMA E ESCALA DE ESTÁGIOS DIGITAL -->
+        <!-- ============================================================== -->
+        <section id="modulo-estagios" class="space-y-6">
+            <!-- Header Controls & Filters -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                            <span>Escala & Cronograma de Estágios Digital</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">Tempo Real</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Lançamento rápido para Preceptores em campo, controle de presença com Nome + Prontuário e monitoramento de Desistentes/Trancados.
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="abrirModalNovaEscala()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center space-x-2 transition-all">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            <span>Agendar Nova Escala</span>
+                        </button>
+                        <button onclick="imprimirEscala()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium py-2 px-3 rounded-lg border border-slate-300 flex items-center space-x-1.5 transition-all">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Imprimir Escala</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Turma:</label>
+                        <select id="filtro-turma-estagio" onchange="renderizarEscalas()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">Todas as Turmas (131, 129, TN-240...)</option>
+                            <option value="Turma 131" selected>Turma 131 - Instrumentação Cirúrgica</option>
+                            <option value="Turma 129">Turma 129 - Instrumentação Cirúrgica</option>
+                            <option value="TN-240">TN-240 - Técnico em Enfermagem</option>
+                            <option value="AUX-242">AUX-242 - Auxiliar de Enfermagem</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Campo / Hospital:</label>
+                        <select id="filtro-hospital-estagio" onchange="renderizarEscalas()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="">Todos os Campos Hospitalares</option>
+                            <option value="Hospital Municipal de Franco da Rocha">Hospital Municipal de Franco da Rocha</option>
+                            <option value="Hospital Estadual de Francisco Morato">Hospital Estadual de Francisco Morato</option>
+                            <option value="Hospital Regional de Caieiras">Hospital Regional de Caieiras</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Data do Estágio:</label>
+                        <input type="date" id="filtro-data-estagio" value="2026-10-17" onchange="renderizarEscalas()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Busca por Aluno ou Prontuário:</label>
+                        <div class="relative">
+                            <input type="text" id="filtro-busca-estagio" onkeyup="renderizarEscalas()" placeholder="Ex: 2026-00129 ou Ana..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg pl-8 pr-3 py-2 focus:ring-emerald-500 focus:outline-none">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preceptor Mobile-Friendly Table / List -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-bold text-slate-700">Alunos Escalados no Campo:</span>
+                        <span id="contador-escala" class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full">8 alunos</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-xs text-slate-600">
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block mr-1"></span> [P] Presença</span>
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block mr-1"></span> [F] Falta (+ Taxa R$50)</span>
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block mr-1"></span> [FJ] Justificada</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Prontuário</th>
+                                <th class="py-3 px-4">Nome do Aluno</th>
+                                <th class="py-3 px-4">Status & Motivo de Desistência</th>
+                                <th class="py-3 px-4">Campo Hospitalar / Preceptor</th>
+                                <th class="py-3 px-4">Data / Turno</th>
+                                <th class="py-3 px-4 text-center">Frequência no Campo</th>
+                                <th class="py-3 px-4 text-center">Taxa Reposição</th>
+                                <th class="py-3 px-4 text-center">Ficha Validada</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-escala-estagios" class="divide-y divide-slate-100">
+                            <!-- Inserido dinamicamente via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Regras Contratuais Visíveis & Sumário de Regras de Estágio -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                    <div class="flex items-center space-x-2 text-emerald-800 font-bold text-sm mb-1">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        <span>Regra de Taxa de Reposição</span>
+                    </div>
+                    <p class="text-xs text-emerald-700">
+                        Ao registrar <strong>[F] Falta</strong> sem apresentação de atestado válido, o sistema emite automaticamente uma cobrança de <strong>R$ 50,00</strong> vinculada ao prontuário do aluno.
+                    </p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                    <div class="flex items-center space-x-2 text-amber-800 font-bold text-sm mb-1">
+                        <i class="fa-solid fa-file-medical text-amber-600"></i>
+                        <span>Atestado & Falta Justificada</span>
+                    </div>
+                    <p class="text-xs text-amber-700">
+                        O registro <strong>[FJ] Falta Justificada</strong> exige protocolo do atestado médico. Ele isenta a taxa de R$ 50,00 e o aluno realiza a reposição no cronograma complementar.
+                    </p>
+                </div>
+                <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl">
+                    <div class="flex items-center space-x-2 text-sky-800 font-bold text-sm mb-1">
+                        <i class="fa-solid fa-stamp text-sky-600"></i>
+                        <span>Aprovação Final da Ficha</span>
+                    </div>
+                    <p class="text-xs text-sky-700">
+                        A Coordenação deve validar 100% das fichas no sistema. O certificado do aluno permanece <strong>bloqueado</strong> enquanto constar ficha pendente.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- MÓDULO 2: CHAMADA TEÓRICA -->
+        <!-- ============================================================== -->
+        <section id="modulo-chamada" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                            <span>Diário de Classe & Chamada das Aulas Teóricas</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Lançamento diário de presença/falta por turma com atualização imediata do % global de presença.
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="salvarChamada()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Salvar Chamada do Dia</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-100">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Turma:</label>
+                        <select id="turma-chamada" onchange="renderizarChamadaTeorica()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="1">Turma 131 - Instrumentação Cirúrgica (Sábados)</option>
+                            <option value="2">Turma 129 - Instrumentação Cirúrgica</option>
+                            <option value="3">TN-240 - Técnico em Enfermagem (Noite)</option>
+                            <option value="4">AUX-242 - Auxiliar de Enfermagem</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Data da Aula:</label>
+                        <input type="date" id="data-chamada" value="2026-10-17" onchange="renderizarChamadaTeorica()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Módulo / Disciplina:</label>
+                        <input type="text" id="disciplina-chamada" value="Técnicas e Paramentação Cirúrgica" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Chamada -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Prontuário</th>
+                                <th class="py-3 px-4">Nome do Aluno</th>
+                                <th class="py-3 px-4">Turma</th>
+                                <th class="py-3 px-4">Status Matrícula</th>
+                                <th class="py-3 px-4 text-center">Frequência Acumulada (%)</th>
+                                <th class="py-3 px-4 text-center">Chamada da Aula</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-chamada-teorica" class="divide-y divide-slate-100">
+                            <!-- Inserido dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- MÓDULO 4: FINANCEIRO & COBRANÇA WHATSAPP -->
+        <!-- ============================================================== -->
+        <section id="modulo-financeiro" class="hidden space-y-6">
+            <!-- Painel de Controle Financeiro Diário -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-500 uppercase">Recebimentos do Dia (Pix/Cartão)</div>
+                    <div class="text-2xl font-black text-emerald-600 mt-1">R$ 380,00</div>
+                    <div class="text-[11px] text-emerald-700 mt-1 flex items-center">
+                        <i class="fa-solid fa-check-circle mr-1"></i> Baixa automática no sistema
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-500 uppercase">A Vencer (Próximos 3 Dias)</div>
+                    <div class="text-2xl font-black text-sky-600 mt-1">R$ 760,00</div>
+                    <div class="text-[11px] text-slate-500 mt-1">2 parcelas monitoradas</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-500 uppercase">Inadimplentes em Atraso</div>
+                    <div class="text-2xl font-black text-rose-600 mt-1">R$ 797,60</div>
+                    <div class="text-[11px] text-rose-600 mt-1 font-semibold flex items-center">
+                        <i class="fa-solid fa-clock mr-1"></i> Multa 2% + juros calculados
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-bold text-slate-500 uppercase">Taxas de Reposição Geradas</div>
+                    <div class="text-2xl font-black text-amber-600 mt-1">R$ 100,00</div>
+                    <div class="text-[11px] text-amber-700 mt-1">2 faltas em estágio sem justificativa</div>
+                </div>
+            </div>
+
+            <!-- Tabela de Lançamentos & Ação WhatsApp -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="text-sm font-bold text-slate-700">Lançamentos Financeiros & Disparador de Cobrança WhatsApp</h3>
+                    <div class="text-xs text-slate-500">
+                        Chave Pix Institucional: <strong class="text-slate-700 font-mono">secretaria@cepa.edu.br</strong>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Prontuário</th>
+                                <th class="py-3 px-4">Aluno</th>
+                                <th class="py-3 px-4">Descrição</th>
+                                <th class="py-3 px-4">Vencimento</th>
+                                <th class="py-3 px-4">Valor Base</th>
+                                <th class="py-3 px-4">Multa / Juros</th>
+                                <th class="py-3 px-4 font-bold">Valor Atual</th>
+                                <th class="py-3 px-4 text-center">Status</th>
+                                <th class="py-3 px-4 text-center">Cobrança WhatsApp</th>
+                                <th class="py-3 px-4 text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-financeiro" class="divide-y divide-slate-100">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- MÓDULO 5: CERTIFICADOS & VALIDAÇÃO -->
+        <!-- ============================================================== -->
+        <section id="modulo-certificados" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                        <span>Fila de Emissão de Certificados & Validação dos 4 Pilares</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">
+                        O sistema bloqueia rigorosamente a impressão de certificado caso falte qualquer um dos 4 requisitos regulatórios.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tabela de Alunos Aptos / Inaptos -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Prontuário</th>
+                                <th class="py-3 px-4">Nome do Aluno</th>
+                                <th class="py-3 px-4">Curso / Turma</th>
+                                <th class="py-3 px-4 text-center">1. Média (≥ 6.0)</th>
+                                <th class="py-3 px-4 text-center">2. Frequência (≥ 75%)</th>
+                                <th class="py-3 px-4 text-center">3. Fichas de Estágio</th>
+                                <th class="py-3 px-4 text-center">4. Quitação Financeira</th>
+                                <th class="py-3 px-4 text-center">Status Emissão</th>
+                                <th class="py-3 px-4 text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-certificados" class="divide-y divide-slate-100">
+                            <!-- Inserido dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- MÓDULO 1: ALUNOS & MOTOR DE REMATRÍCULA -->
+        <!-- ============================================================== -->
+        <section id="modulo-rematricula" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Cadastro de Aluno Rápido -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-user-plus text-emerald-600"></i>
+                        <span>Novo Cadastro de Aluno</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">
+                        O prontuário é gerado de forma sequencial e unívoca pelo sistema.
+                    </p>
+                    <form id="form-novo-aluno" onsubmit="cadastrarAluno(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo:</label>
+                            <input type="text" id="novo-aluno-nome" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Juliana Prado Souza">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">CPF:</label>
+                                <input type="text" id="novo-aluno-cpf" required placeholder="000.000.000-00" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">RG:</label>
+                                <input type="text" id="novo-aluno-rg" placeholder="00.000.000-0" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp:</label>
+                            <input type="text" id="novo-aluno-whatsapp" required placeholder="11999999999" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Turma de Ingresso:</label>
+                            <select id="novo-aluno-turma" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="1">Turma 131 - Instrumentação Cirúrgica</option>
+                                <option value="2">Turma 129 - Instrumentação Cirúrgica</option>
+                                <option value="3">TN-240 - Técnico em Enfermagem</option>
+                                <option value="4">AUX-242 - Auxiliar de Enfermagem</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-save"></i>
+                            <span>Cadastrar Aluno & Gerar Prontuário</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Motor de Validação de Rematrícula em 1 Clique -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>Motor de Validação de Rematrícula Automática</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">
+                        O motor executa a verificação dos 3 itens contratuais (Financeiro, Frequência >= 75% e Nota >= 6.0). Se aprovado, libera rematrícula imediata.
+                    </p>
+
+                    <div class="flex items-center space-x-3">
+                        <select id="select-aluno-rematricula" class="flex-1 text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                            <!-- Inserido dinamicamente -->
+                        </select>
+                        <button onclick="testarRematricula()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-sm transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-stethoscope"></i>
+                            <span>Diagnosticar Rematrícula</span>
+                        </button>
+                    </div>
+
+                    <div id="resultado-rematricula" class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+                        <div class="text-xs text-slate-500 text-center py-4">
+                            Selecione um aluno acima e clique em "Diagnosticar Rematrícula" para rodar os 3 filtros do motor.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: AGENDAR NOVA ESCALA DE ESTÁGIO (COM VALIDAÇÃO IC) -->
+    <!-- ============================================================== -->
+    <div id="modal-nova-escala" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scaleIn">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar-plus text-emerald-600"></i>
+                    <span>Alocar Aluno na Escala de Estágio</span>
+                </h3>
+                <button onclick="fecharModalNovaEscala()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <form id="form-escala" onsubmit="salvarNovaEscala(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Selecionar Aluno (Turma + Prontuário):</label>
+                    <select id="escala-aluno-select" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                        <!-- Inserido dinamicamente -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Campo de Estágio / Hospital:</label>
+                    <select id="escala-hospital" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                        <option value="Hospital Municipal de Franco da Rocha - Centro Cirúrgico">Hospital Municipal de Franco da Rocha - Centro Cirúrgico</option>
+                        <option value="Hospital Estadual de Francisco Morato">Hospital Estadual de Francisco Morato</option>
+                        <option value="Hospital Regional de Caieiras">Hospital Regional de Caieiras</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Preceptor Responsável:</label>
+                    <input type="text" id="escala-preceptor" required value="Enfª. Amanda Silveira" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Data:</label>
+                        <input type="date" id="escala-data" required value="2026-10-24" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Turno:</label>
+                        <select id="escala-turno" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                            <option value="Manhã (07:00 às 13:00)">Manhã (07:00 às 13:00)</option>
+                            <option value="Tarde (13:00 às 19:00)">Tarde (13:00 às 19:00)</option>
+                            <option value="Noite (18:50 às 22:30)">Noite (Bloqueado para IC)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="alerta-validacao-ic" class="hidden bg-rose-50 border border-rose-200 p-2.5 rounded-lg text-rose-700 font-medium">
+                    <!-- Mensagem de bloqueio de agendamento IC -->
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+                    <button type="button" onclick="fecharModalNovaEscala()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-sm">Confirmar Escala</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: PROTOCOLAR ATESTADO MÉDICO [FJ] -->
+    <!-- ============================================================== -->
+    <div id="modal-atestado" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                    <i class="fa-solid fa-file-medical text-amber-500"></i>
+                    <span>Protocolar Atestado Médico [FJ]</span>
+                </h3>
+                <button onclick="fecharModalAtestado()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <p class="text-slate-600">
+                    Ao protocolar a <strong>Falta Justificada</strong> com atestado médico, a taxa de reposição de <strong>R$ 50,00</strong> é abonada e não é gerado débito financeiro.
+                </p>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Número / Protocolo do Atestado:</label>
+                    <input type="text" id="atestado-protocolo" placeholder="Ex: CRM-129482 / AT-8821" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Anexo / Comprovante (Opcional):</label>
+                    <input type="file" class="w-full text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                </div>
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+                    <button onclick="fecharModalAtestado()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold">Cancelar</button>
+                    <button onclick="confirmarFaltaJustificada()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold shadow-sm">Abonar & Salvar FJ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: GERAR MENSAGEM WHATSAPP -->
+    <!-- ============================================================== -->
+    <div id="modal-whatsapp" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                    <i class="fa-brands fa-whatsapp text-emerald-500 text-xl"></i>
+                    <span>Mensagem Dinâmica de Cobrança WhatsApp</span>
+                </h3>
+                <button onclick="fecharModalWhatsApp()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Aluno / Contato:</label>
+                    <div id="whatsapp-destinatario" class="font-bold text-slate-800 text-sm"></div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Texto Gerado Automaticamente:</label>
+                    <textarea id="whatsapp-mensagem-texto" rows="6" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-sans text-xs focus:ring-emerald-500 focus:outline-none"></textarea>
+                </div>
+                <div class="pt-2 flex items-center justify-between">
+                    <button onclick="copiarTextoWhatsApp()" class="text-xs text-slate-600 hover:text-slate-900 font-semibold flex items-center space-x-1">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copiar Mensagem</span>
+                    </button>
+                    <div class="flex space-x-2">
+                        <button onclick="fecharModalWhatsApp()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold">Fechar</button>
+                        <a id="btn-enviar-whatsapp-link" href="#" target="_blank" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-sm flex items-center space-x-1.5">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>Abrir no WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: VISUALIZAÇÃO E IMPRESSÃO DE CERTIFICADO & FICHA CFIC -->
+    <!-- ============================================================== -->
+    <div id="modal-certificado-view" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 shadow-2xl border border-slate-200 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div class="flex items-center space-x-3">
+                    <img src="assets/LOGO CEPA SEM FUNDO.png" class="h-10 w-auto" alt="Logo">
+                    <img src="assets/LOGO CFIC SEM FUNDO.png" class="h-10 w-auto" alt="Logo">
+                    <div>
+                        <div class="text-sm font-black text-slate-800">DOCUMENTO OFICIAL CEPA / CFIC</div>
+                        <div class="text-xs text-slate-500">Certificado e Ficha de Estágio Homologada</div>
+                    </div>
+                </div>
+                <button onclick="fecharModalCertificado()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <div id="certificado-conteudo-impresso" class="border-2 border-double border-emerald-800 p-8 rounded-lg bg-amber-50/20 text-center space-y-4">
+                <!-- Preenchido dinamicamente -->
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-2 border-t border-slate-200">
+                <button onclick="fecharModalCertificado()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Fechar</button>
+                <button onclick="window.print()" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-md flex items-center space-x-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Imprimir Certificado Oficial</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>© 2026 CEPA - Centro de Ensino Profissionalizante Anchieta & CFIC. Todos os direitos reservados.</span>
+            <span class="font-mono text-slate-400">Banco de Dados Ativo: tb_alunos | tb_estagio_escalas | tb_financeiro</span>
+        </div>
+    </footer>
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

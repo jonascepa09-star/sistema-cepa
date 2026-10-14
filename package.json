@@ -1,0 +1,17 @@
+{
+  "name": "sistema-gestao-cepa",
+  "version": "1.0.0",
+  "description": "Sistema Completo de Gestão Escolar e Hospitalar CEPA / CFIC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["cepa", "gestao-escolar", "estagio", "enfermagem", "instrumentacao-cirurgica"],
+  "author": "CEPA Team",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
